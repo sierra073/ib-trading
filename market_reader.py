@@ -8,12 +8,13 @@ from ibapi.wrapper import EWrapper
 from ibapi.utils import iswrapper
 
 class MarketReader(EWrapper, EClient):
-    ''' Serves as the client and the wrapper '''
+    ''' Serves as the client and the wrapper for requesting historical bar data for a single ticker'''
 
     def __init__(self, addr, port, client_id):
         EClient. __init__(self, self)
         self.index = 0
         self.data = []
+        self.earliest_date = ''
 
         # Connect to TWS
         self.connect(addr, port, client_id)
@@ -40,6 +41,11 @@ class MarketReader(EWrapper, EClient):
     def historicalDataEnd(self, req_id, start, end):
         ''' Called after historical data has been received '''
         self.index += 1
+
+    @iswrapper
+    def headTimestamp(self, req_id, headTimestamp):
+        print("HeadTimeStamp: ", headTimestamp)
+        self.earliest_date = headTimestamp
 
     @iswrapper
     def error(self, req_id, code, msg):
