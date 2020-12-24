@@ -14,23 +14,25 @@ def get_earliest_date(client, contract):
 
 def get_historical_30s_data(client, contract):
     d = datetime.now()
-    date_format = "%Y%m%d %H:%M:%S"
-    earliest_date = datetime.strptime(client.earliest_date, date_format)
+    earliest_date = datetime.strptime(client.earliest_date, "%Y%m%d %H:%M:%S")
     delta = d - earliest_date
     number_of_days = delta.days
     print('number_of_days: ', number_of_days)
 
     for i in range(number_of_days):
-        endDateTime = d.strftime(date_format)
-        print(i, ': requesting for ', endDateTime)
-        client.reqHistoricalData(i, contract, endDateTime, '1 D', '30 secs', 'TRADES', 1, 1, False, [])
+        request_30s_data_1day(client, contract, d, i)
         d = d - timedelta(days=1)
-        time.sleep(5)
 
     if (client.index >= (number_of_days - 1)):
         result = pd.DataFrame.from_records(client.data)
         print('data dimensions:', result.shape)
         insert_historical_data(result, contract.symbol)
+
+def request_30s_data_1day(client, contract, d, i):
+    endDateTime = d.strftime("%Y%m%d %H:%M:%S")
+    print(i, ': requesting for ', endDateTime)
+    client.reqHistoricalData(i, contract, endDateTime, '1 D', '30 secs', 'TRADES', 1, 1, False, [])
+    time.sleep(5)
 
 def insert_historical_data(result, ticker):
     engine = create_engine(DATABASE_URL)
