@@ -2,4 +2,4 @@ algo-book
 .DS_Store
 __pycache__
 .env
-ib-gateway-docker-gcp
+ib-gateway-docker-aws

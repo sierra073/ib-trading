@@ -1,4 +1,3 @@
-''' Demonstrates different ways to request financial data '''
 from threading import Thread
 import pandas as pd
 import time

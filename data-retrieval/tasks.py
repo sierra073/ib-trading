@@ -1,31 +1,31 @@
 from ibapi.client import Contract
 from market_reader_historical import MarketReaderHistorical
-from celery import app
 from datetime import datetime, timedelta
 import time
 import pandas as pd
 from sqlalchemy import create_engine
 import os
-
+from celery import Celery
+from celery.utils.log import get_task_logger
 DATABASE_URL = os.environ.get('DATABASE_URL')
-print('DATABASE_URL: ' + DATABASE_URL)
 
-@app.task(bind=True, default_retry_delay=20, max_retries=10, acks_late=True)
-def get_historical_day_for_symbol(symbol, day):
+app = Celery('tasks', broker='redis://redis:6379/0', backend='redis://redis:6379/0')
 
-    # Create the client and connect to IB Gateway
-    client = MarketReaderHistorical('127.0.0.1', 4002, 0)
-
-    contract = Contract()
-    contract.symbol = symbol
-    contract.secType = 'STK'
-    contract.exchange = 'SMART'
-    contract.currency = 'USD'
-
-    retrieve_historical_30s_data(client, contract, day)
-
-    # Disconnect from TWS
-    client.disconnect()
+@app.task(default_retry_delay=30, max_retries=10, acks_late=True)
+def get_historical_day_for_symbol(symbol, day, **kwargs):
+    try:
+        client = MarketReaderHistorical('127.0.0.1', 4002, 0)
+        contract = Contract()
+        contract.symbol = symbol
+        contract.secType = kwargs.get('secType', 'STK')
+        contract.exchange = kwargs.get('exchange', 'SMART')
+        contract.currency = kwargs.get('currency', 'USD')
+        retrieve_historical_30s_data(client, contract, day)
+        # Disconnect from TWS
+        client.disconnect()
+        return 'success'
+    except Exception as exc:
+        raise self.retry(exc=exc)
 
 def retrieve_historical_30s_data(client, contract, day):
     request_30s_data(client, contract, day, 1)
