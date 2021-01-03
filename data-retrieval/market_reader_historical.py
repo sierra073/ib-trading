@@ -25,7 +25,7 @@ class MarketReaderHistorical(EWrapper, EClient):
     def historicalData(self, req_id, bar):
         ''' Called in response to reqHistoricalData '''
         bar_dict = {
-            'time': bar.date,
+            'time': str(bar.date),
             'open': bar.open,
             'high': bar.high,
             'low': bar.low,

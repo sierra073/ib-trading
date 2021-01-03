@@ -4,8 +4,8 @@ services:
     build: ./ib-gateway-docker-aws
     #image: dvasdekis/ib-gateway-docker:v978
     volumes:
-      - ./ib-gateway-docker-gcp/ib/IBController.ini:/root/IBController/IBController.ini
-      - ./ib-gateway-docker-gcp/ib/jts.ini:/root/Jts/jts.ini
+      - ./ib-gateway-docker-aws/ib/IBController.ini:/root/IBController/IBController.ini
+      - ./ib-gateway-docker-aws/ib/jts.ini:/root/Jts/jts.ini
     environment:
       - TRADING_MODE=${TWS_TRADING_MODE}
       - TWSUSERID=${TWS_USER_ID}
@@ -15,7 +15,6 @@ services:
       - XVFB_ARGS=${XVFB_ARGS}
     restart: always
     ports:
-      - 4002:4004
       - 5901:5900
   worker:
     build: ./data-retrieval
@@ -23,6 +22,7 @@ services:
       - DATABASE_URL=${DATABASE_URL}
     links:
       - redis
+      - tws
     depends_on:
       - redis
   redis:

@@ -13,7 +13,7 @@ from datetime import datetime, timedelta
 if __name__ == '__main__':
     d = datetime.now()
     earliest_date = datetime(2020, 12, 28)
-    # client = MarketReaderHistorical('127.0.0.1', 4002, 0)
+    # client = MarketReaderHistorical('tws', 4004, 0)
     # contract = Contract()
     # contract.symbol = symbol
     # contract.secType = 'STK'
