@@ -1,28 +1,16 @@
 from celery import group
 from tasks import get_historical_day_for_symbol
-from market_reader_historical import MarketReaderHistorical
+from db import retrieve_earliest_date_for_symbol
 import time
 from datetime import datetime, timedelta
 
 # To be run with docker exec
 
-# this is here temporarily, ideally run a batch process to one-time store all the earliest dates for symbols in a table
-# def get_earliest_date(client, contract):
-#     return client.reqHeadTimeStamp(4101, contract, 'TRADES', 0, 1)
-
 if __name__ == '__main__':
     d = datetime.now()
-    earliest_date = datetime(2020, 12, 28)
-    # client = MarketReaderHistorical('tws', 4004, 0)
-    # contract = Contract()
-    # contract.symbol = symbol
-    # contract.secType = 'STK'
-    # contract.exchange = 'SMART'
-    # contract.currency = 'USD'
-    # earliest_date = datetime.strptime(get_earliest_date(client, contract), "%Y%m%d %H:%M:%S")
-    # client.disconnect()
+    earliest_date = retrieve_earliest_date_for_symbol('SPY')
 
-    delta = d - earliest_date
+    delta = d - datetime.strptime(earliest_date, "%Y%m%d %H:%M:%S")
     number_of_days = delta.days
     print('number_of_days: ', number_of_days)
     group(get_historical_day_for_symbol.s('SPY', (d - timedelta(days=(i+1)))) for i in range(number_of_days))()

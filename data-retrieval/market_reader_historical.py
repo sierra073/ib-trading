@@ -13,6 +13,7 @@ class MarketReaderHistorical(EWrapper, EClient):
         EClient. __init__(self, self)
         self.done = False
         self.data = []
+        self.earliest_date = None
 
         # Connect to TWS
         self.connect(addr, port, client_id)
@@ -43,7 +44,7 @@ class MarketReaderHistorical(EWrapper, EClient):
     @iswrapper
     def headTimestamp(self, req_id, headTimestamp):
         print("HeadTimeStamp: ", headTimestamp)
-        return headTimestamp
+        self.earliest_date = headTimestamp
 
     @iswrapper
     def error(self, req_id, code, msg):
