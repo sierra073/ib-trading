@@ -17,13 +17,8 @@ ticker_metadata  = Table(
     )
 meta.create_all()
 
-def get_earliest_date(client, contract):
-    client.reqHeadTimeStamp(1, contract, 'TRADES', 0, 1)
-    time.sleep(1)
-    return client.earliest_date
-
 def get_earliest_date_for_symbol(symbol, conn, **kwargs):
-    client = MarketReaderHistorical('127.0.0.1', 4002, 0)
+    client = MarketReaderHistorical('tws', 4004, 0)
     contract = Contract()
     contract.symbol = symbol
     contract.secType = kwargs.get('secType', 'STK')
@@ -36,6 +31,11 @@ def get_earliest_date_for_symbol(symbol, conn, **kwargs):
         earliest_date = datetime.strptime(earliest_date, "%Y%m%d %H:%M:%S")
         insert_earliest_date_for_symbol(symbol, earliest_date, conn)
     client.disconnect()
+
+def get_earliest_date(client, contract):
+    client.reqHeadTimeStamp(1, contract, 'TRADES', 0, 1)
+    time.sleep(1)
+    return client.earliest_date
 
 def insert_earliest_date_for_symbol(symbol, earliest_date, conn):
     try:

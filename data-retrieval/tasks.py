@@ -37,7 +37,7 @@ def retrieve_historical_30s_data(client, contract, day):
 def request_30s_data(client, contract, day, i):
     d = parser.parse(day)
     endDateTime = d.strftime("%Y%m%d %H:%M:%S")
-    client.reqHistoricalData(i, contract, endDateTime, '1 D', '30 secs', 'TRADES', 1, 1, False, [])
+    client.reqHistoricalData(i, contract, endDateTime, '1 D', '30 secs', 'TRADES', 0, 1, False, [])
     time.sleep(5)
 
 def insert_historical_data(result, ticker):

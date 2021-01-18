@@ -25,6 +25,15 @@ services:
       - tws
     depends_on:
       - redis
+  flower:
+    build: ./data-retrieval
+    command: flower -A worker --port=5555 --broker=redis://redis:6379/0
+    environment:
+      - BROKER=redis://redis:6379/0
+    links:
+        - redis
+    depends_on:
+        - redis
   redis:
     image: 'redis:6-alpine'
     ports:
